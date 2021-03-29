@@ -190,7 +190,7 @@ class DownloadManager():
                 youtubeHandler = YouTube(songObj.get_youtube_link())
 
             trackAudioStream = youtubeHandler.streams.filter(
-                only_audio=True).order_by('bitrate').last()
+                only_audio=True, subtype="webm").order_by('bitrate').last()
             if not trackAudioStream:
                 print(f"Unable to get audio stream for \"{songObj.get_song_name()}\" "
                       f"by \"{songObj.get_contributing_artists()[0]}\" "
@@ -233,9 +233,7 @@ class DownloadManager():
             # ! sampled length of songs matches the actual length (i.e. a 5 min song won't display
             # ! as 47 seconds long in your music player, yeah that was an issue earlier.)
 
-            command = 'ffmpeg -v quiet -y -i "%s" -acodec libmp3lame -abr true ' \
-                f'-b:a {trackAudioStream.bitrate} ' \
-                '-af "apad=pad_dur=2, dynaudnorm, loudnorm=I=-17" "%s"'
+            command = 'ffmpeg -v quiet -y -i "%s" -acodec libmp3lame -b:a 256k "%s"'
 
             # ! bash/ffmpeg on Unix systems need to have excape char (\) for special characters: \$
             # ! alternatively the quotes could be reversed (single <-> double) in the command then
